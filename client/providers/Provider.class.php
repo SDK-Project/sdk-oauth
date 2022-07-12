@@ -98,6 +98,6 @@ abstract class Provider
             throw new InvalidArgumentException("Invalid token");
         }
 
-        return $result['lastname'];
+        return $result['name'];
     }
 }
