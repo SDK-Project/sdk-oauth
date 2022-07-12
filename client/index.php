@@ -42,7 +42,12 @@ function login()
 
     $github = new providers\Github(CLIENT_ID_GIT, CLIENT_SECRET_GIT, REDIRECT_URI_GIT, 'user', [], 'github');
     echo "<a href={$github->getAuthUrl()}>Se connecter via Github</a><br>";
-    
+
+    $discord = new providers\Discord(CLIENT_ID_DS, CLIENT_SECRET_DS, REDIRECT_URI_DS, 'connections');
+    echo "<a href={$discord->getAuthUrl()}>Se connecter via Discord</a><br>";
+
+    $google = new providers\Google(CLIENT_ID_GO, CLIENT_SECRET_GO, REDIRECT_URI_GO, 'profile');
+    echo "<a href={$google->getAuthUrl()}>Se connecter via Google</a><br>";    
 }
 
 /*========= PROVIDER SERV =========*/
@@ -70,13 +75,15 @@ function gitcallback()
 /*========= PROVIDER DISCORD =========*/
 function dscallback()
 {
-    
+    $discord = new providers\Discord(CLIENT_ID_DS, CLIENT_SECRET_DS, REDIRECT_URI_DS, 'connections');
+    echo $discord->getUser($discord->getAccessToken($_GET['code']));   
 }
 
 /*========= PROVIDER GOOGLE =========*/
 function gocallback()
 {
-   
+    $google = new providers\Google(CLIENT_ID_GO, CLIENT_SECRET_GO, REDIRECT_URI_GO, 'profile');
+    echo $google->getUser($google->getAccessToken($_GET['code']));
 }
 
 $route = $_SERVER['REQUEST_URI'];
