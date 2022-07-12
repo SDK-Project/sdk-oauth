@@ -78,4 +78,28 @@ abstract class Provider
 
         return $result['access_token'];
     }
+
+    public function getUser($access_token)
+    {
+        $url = $this->user_url;
+        
+        $this->options = array(
+            "http" => array(
+                "method" => "GET",
+                "header" => "Authorization: Bearer " . $access_token
+            )
+        );
+
+        $context = stream_context_create($this->options);
+        $result = file_get_contents($url, false, $context);
+        $result = json_decode($result, true);
+
+        if(!$access_token){
+            throw new InvalidArgumentException("Invalid token");
+        }
+
+        return $result['lastname'];
+    }
+
+
 }
