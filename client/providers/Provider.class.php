@@ -100,6 +100,4 @@ abstract class Provider
 
         return $result['lastname'];
     }
-
-
 }
