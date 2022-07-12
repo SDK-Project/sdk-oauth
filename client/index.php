@@ -2,7 +2,21 @@
 
 namespace App;
 
+use InvalidArgumentException;
+
 require __DIR__ . DIRECTORY_SEPARATOR . 'conf.inc.php';
+
+function myAutoloader($class)
+{
+    $class = str_ireplace('App\\', '', $class); // On supprime "App\" de App\providers\Facebook
+    $class = str_ireplace('\\', '/', $class); // providers/Facebook
+    $class .= '.class.php';
+    if(!file_exists($class)){
+        throw new InvalidArgumentException("Invalid file");
+    }
+    include $class; //Include car on a déjà vérifier son existance
+}
+spl_autoload_register('App\myAutoloader');
 
 function home()
 {
@@ -19,25 +33,37 @@ function login()
             <input type='submit' value='Login'>
         </form>
     ";
+
+    $serv = new providers\Serv(CLIENT_ID_SERV, CLIENT_SECRET_SERV, REDIRECT_URI_SERV, 'read,write');
+    echo "<a href={$serv->getAuthUrl()}>Se connecter via Oauth Server</a><br>";
+
+    $facebook = new providers\Facebook(CLIENT_ID_FB, CLIENT_SECRET_FB, REDIRECT_URI_FB, 'public_profile,email');
+    echo "<a href={$facebook->getAuthUrl()}>Se connecter via Facebook</a><br>";
+
+    $github = new providers\Github(CLIENT_ID_GIT, CLIENT_SECRET_GIT, REDIRECT_URI_GIT, 'user', [], 'github');
+    echo "<a href={$github->getAuthUrl()}>Se connecter via Github</a><br>";
     
 }
 
 /*========= PROVIDER SERV =========*/
 function callback()
 {
-    
+    $serv = new providers\Serv(CLIENT_ID_SERV, CLIENT_SECRET_SERV, REDIRECT_URI_SERV, 'read,write');
+    echo $serv->getUser($serv->getAccessToken(empty($_GET['code']) ? $_GET['code'] = 'test' : $_GET['code']));
 }
 
 /*========= PROVIDER FACEBOOK =========*/
 function fbcallback()
 {
-    
+    $facebook = new providers\Facebook(CLIENT_ID_FB, CLIENT_SECRET_FB, REDIRECT_URI_FB, 'public_profile,email');
+    echo $facebook->getUser($facebook->getAccessToken($_GET['code']));
 }
 
 /*========= PROVIDER GITHUB =========*/
 function gitcallback()
 {
-   
+    $github = new providers\Github(CLIENT_ID_GIT, CLIENT_SECRET_GIT, REDIRECT_URI_GIT, 'user', [], 'github');
+    echo $github->getUser($github->getAccessToken($_GET['code']));
 }
 
 
